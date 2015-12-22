@@ -20,7 +20,7 @@ class DisplayedMemeViewController: UIViewController {
             memeImageView.image = meme
         }
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: "makeNewMeme")
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "makeNewMeme")
     }
     
     func makeNewMeme() {
