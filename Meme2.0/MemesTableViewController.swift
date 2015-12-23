@@ -50,6 +50,13 @@ class MemesTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        
+        if tableView.editing {
+            self.editMeme()
+        } else {
+            self.done()
+        }
+        
         return true
     }
     
