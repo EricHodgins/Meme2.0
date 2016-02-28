@@ -8,7 +8,7 @@
 
 
 import UIKit
-
+import CoreData
 
 class MemeCollectionViewController: UICollectionViewController {
     
@@ -16,9 +16,8 @@ class MemeCollectionViewController: UICollectionViewController {
     
     var space:CGFloat = 3
     
-    var memes: [Meme] {
-        return (UIApplication.sharedApplication().delegate as! AppDelegate).memes
-    }
+    
+    var memes = [Meme]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,8 +33,23 @@ class MemeCollectionViewController: UICollectionViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        memes = fetchAllMemes()
         
         self.collectionView?.reloadData()
+    }
+    
+    lazy var sharedContext : NSManagedObjectContext = {
+       return CoreDataStackManager.sharedInstance().managedObjectContext
+    }()
+    
+    func fetchAllMemes() -> [Meme] {
+        let fetchRequest = NSFetchRequest(entityName: "Meme")
+        do {
+            return try sharedContext.executeFetchRequest(fetchRequest) as! [Meme]
+        } catch let error as NSError {
+            print("Error fetching Memes: \(error)")
+            return [Meme]()
+        }
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -58,7 +72,7 @@ class MemeCollectionViewController: UICollectionViewController {
     
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let displayedMemeVC = storyboard?.instantiateViewControllerWithIdentifier("DisplayedMeme") as! DisplayedMemeViewController
-        displayedMemeVC.memedImage = memes[indexPath.row].memedImage
+        displayedMemeVC.memedImage = UIImage(data:memes[indexPath.row].memedImage)
         
         navigationController?.pushViewController(displayedMemeVC, animated: true)
     }
@@ -86,7 +100,7 @@ class MemeCollectionViewController: UICollectionViewController {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("memeCollectionCell", forIndexPath: indexPath) as! CollectionViewCell
         
         cell.collectionImageView.contentMode = .ScaleAspectFill
-        cell.collectionImageView.image = memes[indexPath.row].memedImage
+        cell.collectionImageView.image = UIImage(data:memes[indexPath.row].memedImage)
         
         
         return cell

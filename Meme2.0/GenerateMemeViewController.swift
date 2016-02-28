@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class GenerateMemeViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -251,11 +252,14 @@ class GenerateMemeViewController: UIViewController, UITextFieldDelegate, UIImage
     //MARK: Save
     func save() {
         // save the meme
-        let meme = Meme(topTextField: topTextField.text!, bottomTextField: bottomTextField.text!, image: mainImageView.image!, memedImage: generateMemedImage())
-        let object = UIApplication.sharedApplication().delegate
-        let appDelegate = object as! AppDelegate
-        appDelegate.memes.append(meme)
+        let _ = Meme(top: topTextField.text!, bottom: bottomTextField.text!, orginalImage: UIImagePNGRepresentation(mainImageView.image!)!, memedNewImage: UIImagePNGRepresentation(generateMemedImage())!, context: sharedContext)
+        CoreDataStackManager.sharedInstance().saveContext()
     }
+    
+    lazy var sharedContext: NSManagedObjectContext = {
+        return CoreDataStackManager.sharedInstance().managedObjectContext
+    }()
+    
     
     //MARK: Cancel was pressed
     @IBAction func cancelWasPressed(sender: AnyObject) {

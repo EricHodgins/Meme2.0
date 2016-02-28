@@ -8,13 +8,16 @@
 
 
 import UIKit
+import CoreData
 
 class MemesTableViewController: UITableViewController {
     
     
-    var memes: [Meme] {
-        return (UIApplication.sharedApplication().delegate as! AppDelegate).memes
-    }
+//    var memes: [Meme] {
+//        return (UIApplication.sharedApplication().delegate as! AppDelegate).memes
+//    }
+    
+    var memes = [Meme]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,11 +26,28 @@ class MemesTableViewController: UITableViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: "editMeme")
         
         self.navigationItem.title = "Sent Memes"
+        
     }
     
     override func viewDidAppear(animated: Bool) {
+        memes = fetchAllMemes()
         tableView.reloadData()
     }
+    
+    
+    func fetchAllMemes() -> [Meme] {
+        let fetchRequest = NSFetchRequest(entityName: "Meme")
+        do {
+            return try sharedContext.executeFetchRequest(fetchRequest) as! [Meme]
+        } catch let error as NSError {
+            print("Could not fetch Memes error: \(error)")
+            return [Meme]()
+        }
+    }
+    
+    lazy var sharedContext : NSManagedObjectContext = {
+       return CoreDataStackManager.sharedInstance().managedObjectContext
+    }()
     
     // MARK: - Table view data source
     
@@ -44,7 +64,7 @@ class MemesTableViewController: UITableViewController {
         
         cell.topTextFieldLabel.text = memes[indexPath.row].topTextField
         cell.bottomTextFieldLabel.text = memes[indexPath.row].bottomTextField
-        cell.imageViewCell.image = memes[indexPath.row].memedImage
+        cell.imageViewCell.image = UIImage(data: memes[indexPath.row].memedImage)
         
         return cell
     }
@@ -64,17 +84,19 @@ class MemesTableViewController: UITableViewController {
         
         let displayedMemeVC = storyboard?.instantiateViewControllerWithIdentifier("DisplayedMeme") as! DisplayedMemeViewController
         
-        displayedMemeVC.memedImage = memes[indexPath.row].memedImage
+        displayedMemeVC.memedImage = UIImage(data: memes[indexPath.row].memedImage)
         navigationController?.pushViewController(displayedMemeVC, animated: true)
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        print(memes.count)
         
-        let object = UIApplication.sharedApplication().delegate
-        let appDelegate = object as! AppDelegate
-        appDelegate.memes.removeAtIndex(indexPath.row)
-        
+        sharedContext.deleteObject(memes[indexPath.row])
+        memes.removeAtIndex(indexPath.row)
         tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        CoreDataStackManager.sharedInstance().saveContext()
+        
+        print(memes.count)
         
         if memes.count == 0 {
             self.done()
