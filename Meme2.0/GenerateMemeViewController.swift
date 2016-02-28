@@ -62,25 +62,6 @@ class GenerateMemeViewController: UIViewController, UITextFieldDelegate, UIImage
         return true
     }
     
-    
-    //MARK: Text Field Delegate Methods
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
-    func textFieldDidBeginEditing(textField: UITextField) {
-        if textField == topTextField && !topTextFieldEdited {
-            textField.text = ""
-            topTextFieldEdited = true
-        }
-        
-        if textField == bottomTextField && !bottomTextFieldEdited {
-            textField.text = ""
-            bottomTextFieldEdited = true
-        }
-    }
-    
     // Capitilize any input text.
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         
@@ -316,4 +297,26 @@ class GenerateMemeViewController: UIViewController, UITextFieldDelegate, UIImage
     }
     
 }
+
+extension GenerateMemeViewController {
+    //MARK: Text Field Delegate Methods
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        if textField == topTextField && !topTextFieldEdited {
+            textField.text = ""
+            topTextFieldEdited = true
+        }
+        
+        if textField == bottomTextField && !bottomTextFieldEdited {
+            textField.text = ""
+            bottomTextFieldEdited = true
+        }
+    }
+
+}
+
 
