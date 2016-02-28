@@ -30,6 +30,7 @@ class GenerateMemeViewController: UIViewController, UITextFieldDelegate, UIImage
     
     @IBOutlet weak var topTextFieldConstraint: NSLayoutConstraint!
     @IBOutlet weak var bottomTextFieldConstraint: NSLayoutConstraint!
+    
     var imageRectInImageView: CGRect?
     
     
